@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Recipe Generator 🍳</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 2rem;
+      background: #f7f7f7;
+    }
+    h1 {
+      color: #333;
+    }
+    input, button {
+      padding: 0.5rem;
+      font-size: 1rem;
+      margin-top: 1rem;
+      width: 100%;
+    }
+    .recipe {
+      background: #fff;
+      padding: 1rem;
+      margin-top: 1rem;
+      border-radius: 5px;
+      border-left: 5px solid #4caf50;
+    }
+    .recipe h3 {
+      margin: 0;
+      color: #4caf50;
+    }
+    .recipe p {
+      margin: 0.5rem 0;
+    }
+    .separator {
+      margin-top: 1rem;
+      border-top: 1px solid #ccc;
+    }
+  </style>
+</head>
+<body>
+  <h1>Recipe Generator 🍳</h1>
+  <p>Enter ingredients you have and find recipes you can make!</p>
+  <input type="text" id="ingredientInput" placeholder="Enter ingredients (comma separated)" />
+  <button onclick="findRecipes()">Find Recipes</button>
+
+  <div id="results"></div>
+
+  <script>
+    // Sample recipe data (simulate reading from CSV)
+    const recipes = [
+      {
+        name: "Spaghetti Bolognese",
+        ingredients: ["spaghetti", "tomato", "beef", "onion", "garlic"],
+        instructions: "Cook spaghetti, sauté onions and garlic, add beef, then tomato."
+      },
+      {
+        name: "Tomato Soup",
+        ingredients: ["tomato", "onion", "cream", "garlic"],
+        instructions: "Blend tomatoes, sauté onions, cook and add cream."
+      },
+      {
+        name: "Garlic Bread",
+        ingredients: ["bread", "garlic", "butter"],
+        instructions: "Spread garlic butter on bread, then bake."
+      }
+    ];
+
+    function findRecipes() {
+      const input = document.getElementById("ingredientInput").value;
+      const userIngredients = input.toLowerCase().split(",").map(i => i.trim());
+      const resultsDiv = document.getElementById("results");
+      resultsDiv.innerHTML = "";
+
+      const matchedRecipes = recipes.map(recipe => {
+        const matched = recipe.ingredients.filter(i => userIngredients.includes(i));
+        return matched.length > 0 ? {
+          ...recipe,
+          matched,
+          matchCount: matched.length
+        } : null;
+      }).filter(r => r !== null);
+
+      matchedRecipes.sort((a, b) => b.matchCount - a.matchCount);
+
+      if (matchedRecipes.length > 0) {
+        matchedRecipes.forEach(r => {
+          const recipeDiv = document.createElement("div");
+          recipeDiv.className = "recipe";
+          recipeDiv.innerHTML = `
+            <h3>${r.name} <small>(Matches: ${r.matchCount})</small></h3>
+            <p><strong>Matched Ingredients:</strong> ${r.matched.join(", ")}</p>
+            <p><strong>Instructions:</strong> ${r.instructions}</p>
+          `;
+          resultsDiv.appendChild(recipeDiv);
+        });
+      } else {
+        resultsDiv.innerHTML = "<p>No matching recipes found.</p>";
+      }
+    }
+  </script>
+</body>
+</html>
